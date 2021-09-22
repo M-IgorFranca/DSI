@@ -61,36 +61,36 @@ class _RandomWordsState extends State<RandomWords> {
     ));
   }
 
-  // // Cria a nova página Saved Suggestion
-  // void _updateWordPair() {
-  //   // envia a rota para a pilha do Navigator.
-  //   Navigator.of(context).push(MaterialPageRoute<void>(
-  //     builder: (BuildContext context) {
-  //       final tiles = _saved.map(
-  //         (WordPair pair) {
-  //           // Retorna as linhas da listView
-  //           return ListTile(
-  //             title: Text(
-  //               pair.asPascalCase,
-  //               style: _biggerFont,
-  //             ),
-  //           );
-  //         },
-  //       );
-  //       final divided = ListTile.divideTiles(
-  //         context: context,
-  //         tiles: tiles,
-  //       ).toList();
+  // Cria a nova página Saved Suggestion
+  void _updateWordPair() {
+    // envia a rota para a pilha do Navigator.
+    Navigator.of(context).push(MaterialPageRoute<void>(
+      builder: (BuildContext context) {
+        final tiles = _saved.map(
+          (WordPair pair) {
+            // Retorna as linhas da listView
+            return ListTile(
+              title: Text(
+                pair.asPascalCase,
+                style: _biggerFont,
+              ),
+            );
+          },
+        );
+        final divided = ListTile.divideTiles(
+          context: context,
+          tiles: tiles,
+        ).toList();
 
-  //       return Scaffold(
-  //         appBar: AppBar(
-  //           title: Text('Saved Suggestions'),
-  //         ),
-  //         body: ListView(children: divided),
-  //       );
-  //     },
-  //   ));
-  // }
+        return Scaffold(
+          appBar: AppBar(
+            title: Text('Alterar nomes'),
+          ),
+          body: const MyCustomForm(),
+        );
+      },
+    ));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -153,6 +153,8 @@ class _RandomWordsState extends State<RandomWords> {
         style: _biggerFont,
       ),
 
+      onTap: _updateWordPair,
+
       //Adicionando os ícones para favoritar as palavras
       // Alterei a paternidade dos ícones para favoritar apenas no toque do icone e não da linha
       trailing: new Column(
@@ -178,6 +180,48 @@ class _RandomWordsState extends State<RandomWords> {
           )
         ],
       ),
+      //Adicionar onTap
+    );
+  }
+}
+
+//Código removido e alterado da documentação flutter: https://flutter.dev/docs/cookbook/forms/text-input
+class MyCustomForm extends StatelessWidget {
+  const MyCustomForm({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 16),
+          child: TextFormField(
+            decoration: const InputDecoration(
+              border: UnderlineInputBorder(),
+              labelText: 'Nome antigo',
+            ),
+          ),
+        ),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 50, vertical: 16),
+          child: TextField(
+            decoration: InputDecoration(
+              border: OutlineInputBorder(),
+              hintText: 'Digite um novo nome',
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 16.0),
+          child: ElevatedButton(
+            onPressed: () {
+              //Mudar a informação de do wordPair
+            },
+            child: const Text('Alterar'),
+          ),
+        ),
+      ],
     );
   }
 }
