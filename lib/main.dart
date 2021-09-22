@@ -61,6 +61,37 @@ class _RandomWordsState extends State<RandomWords> {
     ));
   }
 
+  // // Cria a nova página Saved Suggestion
+  // void _updateWordPair() {
+  //   // envia a rota para a pilha do Navigator.
+  //   Navigator.of(context).push(MaterialPageRoute<void>(
+  //     builder: (BuildContext context) {
+  //       final tiles = _saved.map(
+  //         (WordPair pair) {
+  //           // Retorna as linhas da listView
+  //           return ListTile(
+  //             title: Text(
+  //               pair.asPascalCase,
+  //               style: _biggerFont,
+  //             ),
+  //           );
+  //         },
+  //       );
+  //       final divided = ListTile.divideTiles(
+  //         context: context,
+  //         tiles: tiles,
+  //       ).toList();
+
+  //       return Scaffold(
+  //         appBar: AppBar(
+  //           title: Text('Saved Suggestions'),
+  //         ),
+  //         body: ListView(children: divided),
+  //       );
+  //     },
+  //   ));
+  // }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -115,32 +146,38 @@ class _RandomWordsState extends State<RandomWords> {
   //Quando eu quiser adicionar o arrastar para o lado e excluir
   //Provavelmente vai ser aqui na buildRow
   Widget _buildRow(WordPair pair) {
-    final alreadySaved = _saved.contains(pair);
+    final _alreadySaved = _saved.contains(pair);
     return ListTile(
       title: Text(
         pair.asPascalCase,
         style: _biggerFont,
       ),
+
       //Adicionando os ícones para favoritar as palavras
-      trailing: Icon(
-        // alreadySaved tem valor boleano 1 ou 0
-        // Terá um ícone preenchido e vermelho se o valor for 1 e uma borda com cor null(cinza) se o valor for 0
-        alreadySaved ? Icons.favorite : Icons.favorite_border,
-        color: alreadySaved ? Colors.red : null,
+      // Alterei a paternidade dos ícones para favoritar apenas no toque do icone e não da linha
+      trailing: new Column(
+        children: <Widget>[
+          new Container(
+            child: IconButton(
+              icon: Icon(
+                _alreadySaved ? Icons.favorite : Icons.favorite_border,
+                color: _alreadySaved ? Colors.red : null,
+              ),
+              onPressed: () {
+                setState(() {
+                  // Se estiver favoritado e o ícone for clicado remove do conjunto _saved
+                  if (_alreadySaved) {
+                    _saved.remove(pair);
+                    // Se não estiver favoritado e o ícone for clicado adiciona no conjunto _saved
+                  } else {
+                    _saved.add(pair);
+                  }
+                });
+              },
+            ),
+          )
+        ],
       ),
-      //Adiciona interação ao toque
-      onTap: () {
-        //serState faz com que a tela se atualize e mostre a mudança
-        setState(() {
-          // Se estiver favoritado e o ícone for clicado remove do conjunto _saved
-          if (alreadySaved) {
-            _saved.remove(pair);
-            // Se não estiver favoritado e o ícone for clicado adiciona no conjunto _saved
-          } else {
-            _saved.add(pair);
-          }
-        });
-      },
     );
   }
 }
