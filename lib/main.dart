@@ -1,27 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:english_words/english_words.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(MikaelApp());
 
-class MyApp extends StatelessWidget {
+class MikaelApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "Walcome to flutter",
+      title: "Gerador de nomes",
       theme: ThemeData(
         primaryColor: Colors.white,
       ),
-      home: RandomWords(),
+      home: Home(),
     );
   }
 }
 
-class RandomWords extends StatefulWidget {
+class Home extends StatefulWidget {
   @override
-  _RandomWordsState createState() => _RandomWordsState();
+  _HomeState createState() => _HomeState();
 }
 
-class _RandomWordsState extends State<RandomWords> {
+class _HomeState extends State<Home> {
   //aqui _suggestions recebe uma lista[] de WordPair.
   //O Underline em _suggestions significa que podemos acessa-lo em vários lugares.
   final _suggestions = <WordPair>[];
@@ -53,7 +53,7 @@ class _RandomWordsState extends State<RandomWords> {
 
         return Scaffold(
           appBar: AppBar(
-            title: Text('Saved Suggestions'),
+            title: Text('Nomes favoritos'),
           ),
           body: ListView(children: divided),
         );
@@ -86,7 +86,7 @@ class _RandomWordsState extends State<RandomWords> {
           appBar: AppBar(
             title: Text('Alterar nomes'),
           ),
-          body: const MyCustomForm(),
+          body: const UpdateNameForm(),
         );
       },
     ));
@@ -96,7 +96,7 @@ class _RandomWordsState extends State<RandomWords> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Mikael_Igor - gerador de nomes'),
+        title: Text('Mikael Igor App'),
         actions: [
           IconButton(icon: Icon(Icons.list), onPressed: _pushSaved),
         ],
@@ -132,9 +132,30 @@ class _RandomWordsState extends State<RandomWords> {
           key: ValueKey(_suggestions[index]),
           onDismissed: (DismissDirection direction) {
             setState(() {
-              _suggestions.removeAt(index);
-              _saved.remove(WordPair);
+              var removido = _suggestions.removeAt(index);
+              _saved.remove(removido);
             });
+          },
+          confirmDismiss: (DismissDirection endToStart) async {
+            return await showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: const Text("Confirmar"),
+                  content:
+                      const Text("Tem certeza que deseja deletar esse item?"),
+                  actions: <Widget>[
+                    ElevatedButton(
+                        onPressed: () => Navigator.of(context).pop(true),
+                        child: const Text("Deletar")),
+                    ElevatedButton(
+                      onPressed: () => Navigator.of(context).pop(false),
+                      child: const Text("Cancelar"),
+                    ),
+                  ],
+                );
+              },
+            );
           },
         );
       },
@@ -186,8 +207,8 @@ class _RandomWordsState extends State<RandomWords> {
 }
 
 //Código removido e alterado da documentação flutter: https://flutter.dev/docs/cookbook/forms/text-input
-class MyCustomForm extends StatelessWidget {
-  const MyCustomForm({Key? key}) : super(key: key);
+class UpdateNameForm extends StatelessWidget {
+  const UpdateNameForm({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -199,16 +220,16 @@ class MyCustomForm extends StatelessWidget {
           child: TextFormField(
             decoration: const InputDecoration(
               border: UnderlineInputBorder(),
-              labelText: 'Nome antigo',
+              labelText: 'pair.First',
             ),
           ),
         ),
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 50, vertical: 16),
-          child: TextField(
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              hintText: 'Digite um novo nome',
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 16),
+          child: TextFormField(
+            decoration: const InputDecoration(
+              border: UnderlineInputBorder(),
+              labelText: 'pair.Second',
             ),
           ),
         ),
@@ -216,7 +237,7 @@ class MyCustomForm extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 16.0),
           child: ElevatedButton(
             onPressed: () {
-              //Mudar a informação de do wordPair
+              //Função que retorna uma nova Strint para pair.asPascalCase
             },
             child: const Text('Alterar'),
           ),
