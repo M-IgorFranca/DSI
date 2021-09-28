@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:english_words/english_words.dart';
 
-void main() => runApp(MikaelApp());
+void main() => runApp(MyApp());
 
-class MikaelApp extends StatelessWidget {
+final suggestions = <WordPair>[];
+final _saved = <WordPair>{};
+final _biggerFont = const TextStyle(fontSize: 18);
+
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -21,16 +25,21 @@ class Home extends StatefulWidget {
   _HomeState createState() => _HomeState();
 }
 
+//Classe Home com AppBar e botão que leva até Favorite
 class _HomeState extends State<Home> {
-  //aqui _suggestions recebe uma lista[] de WordPair.
-  //O Underline em _suggestions significa que podemos acessa-lo em vários lugares.
-  final _suggestions = <WordPair>[];
-  //Criar um map vazio para palavras favotitadas
-  final _saved = <WordPair>{};
-  // O _biggerFont vai aumentar a font de um Widget text quando for chamado.
-  final _biggerFont = const TextStyle(fontSize: 18);
+  @override
+  Widget build(BuildContext context) {
+    setState(() {});
+    return Scaffold(
+        appBar: AppBar(
+          title: Text('Mikael Igor App'),
+          actions: [
+            IconButton(icon: Icon(Icons.list), onPressed: _pushSaved),
+          ],
+        ),
+        body: RandomWords());
+  }
 
-  // Cria a nova página Saved Suggestion
   void _pushSaved() {
     // envia a rota para a pilha do Navigator.
     Navigator.of(context).push(MaterialPageRoute<void>(
@@ -60,101 +69,68 @@ class _HomeState extends State<Home> {
       },
     ));
   }
+}
 
-  // Cria a nova página Saved Suggestion
-  void _updateWordPair() {
-    // envia a rota para a pilha do Navigator.
-    Navigator.of(context).push(MaterialPageRoute<void>(
-      builder: (BuildContext context) {
-        final tiles = _saved.map(
-          (WordPair pair) {
-            // Retorna as linhas da listView
-            return ListTile(
-              title: Text(
-                pair.asPascalCase,
-                style: _biggerFont,
-              ),
-            );
-          },
-        );
-        final divided = ListTile.divideTiles(
-          context: context,
-          tiles: tiles,
-        ).toList();
+// CLasse RandomWords será um Widget com estado
+class RandomWords extends StatefulWidget {
+  @override
+  _RandomWordsState createState() => _RandomWordsState();
+}
 
-        return Scaffold(
-          appBar: AppBar(
-            title: Text('Alterar nomes'),
-          ),
-          body: const UpdateNameForm(),
-        );
-      },
-    ));
-  }
-
+// RandomWordsState retorna a ListView(Divider, Dismissible(Classe:buildRow))
+class _RandomWordsState extends State<RandomWords> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Mikael Igor App'),
-        actions: [
-          IconButton(icon: Icon(Icons.list), onPressed: _pushSaved),
-        ],
-      ),
-      body: _buildSuggestions(),
-    );
+    return list(context, suggestions);
   }
 
-  Widget _buildSuggestions() {
-    //Retorna um formato de lista do próprio flutter.
-    //Com padding de 16
+  Widget list(BuildContext context, _suggestions) {
+    setState(() {});
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemBuilder: (BuildContext _context, int i) {
-        // Adiciona uma linha divisora de 1px em baixo de cada item da lista.
         if (i.isOdd) {
           return Divider();
         }
-        // The syntax "i ~/ 2" divide i por 2 e retorna um numero inteiro.
-        // Por exemplo: 1, 2, 3, 4, 5 se torna 0, 1, 1, 2, 2.
         final int index = i ~/ 2;
-        // Se você alcançou o final da palavra disponível
         if (index >= _suggestions.length) {
-          // então é serão adicionados mais 10 itens na lista
           _suggestions.addAll(generateWordPairs().take(10));
         }
-        //Funcionalidade arrastar e remover
-        return Dismissible(
-          child: _buildRow(_suggestions[index]),
-          background: Container(
-            color: Colors.red,
-          ),
-          key: ValueKey(_suggestions[index]),
-          onDismissed: (DismissDirection direction) {
-            setState(() {
-              var removido = _suggestions.removeAt(index);
-              _saved.remove(removido);
-            });
-          },
-          confirmDismiss: (DismissDirection endToStart) async {
-            return await showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  title: const Text("Confirmar"),
-                  content:
-                      const Text("Tem certeza que deseja deletar esse item?"),
-                  actions: <Widget>[
-                    ElevatedButton(
-                        onPressed: () => Navigator.of(context).pop(true),
-                        child: const Text("Deletar")),
-                    ElevatedButton(
-                      onPressed: () => Navigator.of(context).pop(false),
-                      child: const Text("Cancelar"),
-                    ),
-                  ],
-                );
-              },
+        return dismissible(context, _suggestions[index], index);
+      },
+    );
+  }
+
+  Widget dismissible(BuildContext context, WordPair pair, int index) {
+    final objeto = pair.asPascalCase;
+    return Dismissible(
+      key: Key(objeto),
+      child: buildRow(context, pair, index, objeto),
+      background: Container(
+        color: Colors.red,
+      ),
+      onDismissed: (DismissDirection direction) {
+        setState(() {
+          var removido = suggestions.removeAt(index);
+          _saved.remove(removido);
+        });
+      },
+      confirmDismiss: (DismissDirection endToStart) async {
+        return await showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text("Confirmar"),
+              content: const Text("Tem certeza que deseja deletar esse item?"),
+              actions: <Widget>[
+                ElevatedButton(
+                    onPressed: () => Navigator.of(context).pop(true),
+                    child: const Text("Deletar")),
+                ElevatedButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: const Text("Cancelar"),
+                ),
+              ],
             );
           },
         );
@@ -162,87 +138,129 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Set<WordPair> get newMethod => _saved;
-
-  //Quando eu quiser adicionar o arrastar para o lado e excluir
-  //Provavelmente vai ser aqui na buildRow
-  Widget _buildRow(WordPair pair) {
+  Widget buildRow(context, pair, int index, objeto) {
     final _alreadySaved = _saved.contains(pair);
     return ListTile(
-      title: Text(
-        pair.asPascalCase,
-        style: _biggerFont,
-      ),
-
-      onTap: _updateWordPair,
-
-      //Adicionando os ícones para favoritar as palavras
-      // Alterei a paternidade dos ícones para favoritar apenas no toque do icone e não da linha
-      trailing: new Column(
-        children: <Widget>[
-          new Container(
-            child: IconButton(
-              icon: Icon(
-                _alreadySaved ? Icons.favorite : Icons.favorite_border,
-                color: _alreadySaved ? Colors.red : null,
+        title: Text(
+          pair.asPascalCase,
+          style: _biggerFont,
+        ),
+        trailing: new Column(
+          children: <Widget>[
+            new Container(
+              child: IconButton(
+                icon: Icon(
+                  _alreadySaved ? Icons.favorite : Icons.favorite_border,
+                  color: _alreadySaved ? Colors.red : null,
+                ),
+                onPressed: () {
+                  setState(() {
+                    // Se estiver favoritado e o ícone for clicado remove do conjunto _saved
+                    if (_alreadySaved) {
+                      _saved.remove(pair);
+                      // Se não estiver favoritado e o ícone for clicado adiciona no conjunto _saved
+                    } else {
+                      _saved.add(pair);
+                    }
+                  });
+                },
               ),
-              onPressed: () {
-                setState(() {
-                  // Se estiver favoritado e o ícone for clicado remove do conjunto _saved
-                  if (_alreadySaved) {
-                    _saved.remove(pair);
-                    // Se não estiver favoritado e o ícone for clicado adiciona no conjunto _saved
-                  } else {
-                    _saved.add(pair);
-                  }
-                });
-              },
-            ),
-          )
-        ],
-      ),
-      //Adicionar onTap
-    );
+            )
+          ],
+        ),
+        onTap: () => Navigator.of(context).push(MaterialPageRoute(
+            builder: (BuildContext context) => EditPage(),
+            settings: RouteSettings(arguments: {'index': index, 'pair': pair})))
+        //Adicionando os ícones para favoritar as palavras
+        // Alterei a paternidade dos ícones para favoritar apenas no toque do icone e não da linha
+        );
   }
 }
 
-//Código removido e alterado da documentação flutter: https://flutter.dev/docs/cookbook/forms/text-input
-class UpdateNameForm extends StatelessWidget {
-  const UpdateNameForm({Key? key}) : super(key: key);
-
+class EditPage extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 16),
-          child: TextFormField(
-            decoration: const InputDecoration(
-              border: UnderlineInputBorder(),
-              labelText: 'pair.First',
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 16),
-          child: TextFormField(
-            decoration: const InputDecoration(
-              border: UnderlineInputBorder(),
-              labelText: 'pair.Second',
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 16.0),
-          child: ElevatedButton(
-            onPressed: () {
-              //Função que retorna uma nova Strint para pair.asPascalCase
-            },
-            child: const Text('Alterar'),
-          ),
-        ),
-      ],
+  _EditPageState createState() => _EditPageState();
+}
+
+class _EditPageState extends State<EditPage> {
+  String? first = '';
+  String? second = '';
+  final _formKey = GlobalKey<FormState>();
+  @override
+  Widget build(context) {
+    Map arguments = ModalRoute.of(context)!.settings.arguments as Map;
+    var index = arguments['index'];
+    var pair = arguments['pair'];
+    first = pair.first;
+    second = pair.second;
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Edit item'),
+      ),
+      body: Container(
+          color: Colors.white, child: updateNameForm(context, pair, index)),
     );
+  }
+
+  updateNameForm(context, pair, index) {
+    return Form(
+      key: _formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 16),
+            child: TextFormField(
+              initialValue: first,
+              keyboardType: TextInputType.text,
+              decoration: const InputDecoration(labelText: 'Primeira'),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Digite um valor válido';
+                }
+                return null;
+              },
+              onSaved: (newValue) {
+                first = newValue;
+              },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 16),
+            child: TextFormField(
+              initialValue: second,
+              keyboardType: TextInputType.text,
+              decoration: const InputDecoration(labelText: 'Segunda'),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Digite um nome válido';
+                }
+                return null;
+              },
+              onSaved: (value) {
+                second = value;
+              },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 16),
+            child: ElevatedButton(
+              onPressed: () => _save(context, index),
+              child: Text('Salvar'),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _save(BuildContext context, index) {
+    _formKey.currentState!.save();
+    print(suggestions);
+    var pair = WordPair(first!, second!);
+    suggestions[index] = pair;
+    print(suggestions);
+    Navigator.of(context)
+        .pop(MaterialPageRoute(builder: (BuildContext context) => Home()));
   }
 }
