@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "435268152759",
+    "project_id": "bandnamesurvey-b698e",
+    "storage_bucket": "bandnamesurvey-b698e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:435268152759:android:e2f75b7aea9f95ac92cc32",
+        "android_client_info": {
+          "package_name": "com.example.myapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "435268152759-21or7d8jnhnekslrf8dm5tg6290dlu0f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAcY-NIvN-_rHR-8l5hsQ3zbv_hOYq4lvE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "435268152759-21or7d8jnhnekslrf8dm5tg6290dlu0f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
