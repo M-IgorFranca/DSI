@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'line.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -26,16 +27,19 @@ class _ListState extends State<List>{
         builder: (context, AsyncSnapshot snapshot) {
           if (!snapshot.hasData) return const Text('Carregando...');
           {
-          return ListView.builder(
+          return ListView.separated(
               padding: const EdgeInsets.all(16),
-              itemExtent: 80.0,
               itemCount: snapshot.data.docs.length,
-              itemBuilder: (context, index) =>
-                  Line(
+              itemBuilder: (context, index) {
+                return Line(
                     id: snapshot.data.docs[index]['id'],
                     favorite: snapshot.data.docs[index]['favorite'],
                     firstName: snapshot.data.docs[index]['firstName'],
-                    secondName: snapshot.data.docs[index]['secondName'],)
+                    secondName: snapshot.data.docs[index]['secondName'],);
+              },
+            separatorBuilder: (BuildContext context, int index) {
+              return const Divider(color: Colors.black38,);
+            },
           );
           }
         }
