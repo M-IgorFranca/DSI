@@ -17,14 +17,15 @@ class _FavoriteLineState extends State<FavoriteLine>{
     return ListTile(
       title: Row(
         children: [
-          if (widget.favorite = false)
-            Expanded(
+           Expanded(
               child: Text(
-                widget.firstName + ' ' + widget.secondName,
-                style: Theme.of(context).textTheme.headline5,
+                  widget.firstName + ' ' + widget.secondName,
+                  style: Theme
+                      .of(context)
+                      .textTheme
+                      .headline5,
               ),
-            )
-          else const Text("...")
+            ),
         ],
       ),
     );

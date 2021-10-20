@@ -1,13 +1,16 @@
 import 'package:firebasemywordpair/pages/update_name/view_update.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 
 class Line extends StatefulWidget {
+  var doc;
   var id;
   var firstName;
   var secondName;
   var favorite;
-  Line({Key? key, @required this.id, @required this.firstName, @required this.secondName, @required this.favorite})
-    : super(key:key);
+  Line({Key? key, @required this.doc, @required this.id, @required this.firstName, @required this.secondName, @required this.favorite})
+      : super(key:key);
   @override
   State<StatefulWidget> createState() => _LineState();
 }
@@ -16,9 +19,10 @@ class _LineState extends State<Line>{
   @override
   Widget build(BuildContext context) {
     var obj = widget.id;
+    var doc = widget.doc;
     return Dismissible(
       key: UniqueKey(),
-      child: buildRow(context, obj),
+      child: buildRow(context, obj, doc),
       background: Container(
         color: Colors.red,
       ),
@@ -49,7 +53,7 @@ class _LineState extends State<Line>{
     );
   }
 
-  Widget buildRow(context, obj) {
+  Widget buildRow(context, obj, DocumentSnapshot documentSnapshot) {
     return ListTile(
         title: Row(
           children: [
@@ -68,11 +72,13 @@ class _LineState extends State<Line>{
                 onPressed: () {
                   setState(() {
                     if (widget.favorite) {
-                      widget.favorite = false;
-                      print(widget.favorite);
+                      documentSnapshot.reference.update({
+                        'favorite' : false,
+                      });
                     } else {
-                      widget.favorite = true;
-                      print(widget.favorite);
+                      documentSnapshot.reference.update({
+                        'favorite' : true,
+                      });
                     }
                   });
                 },

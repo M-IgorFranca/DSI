@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'line.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+List length_list = [] as List;
 
 class List extends StatefulWidget {
   const List({Key? key}) : super(key: key);
@@ -28,14 +29,15 @@ class _ListState extends State<List>{
           if (!snapshot.hasData) return const Text('Carregando...');
           {
           return ListView.separated(
-              padding: const EdgeInsets.all(16),
-              itemCount: snapshot.data.docs.length,
-              itemBuilder: (context, index) {
-                return Line(
-                    id: snapshot.data.docs[index]['id'],
-                    favorite: snapshot.data.docs[index]['favorite'],
-                    firstName: snapshot.data.docs[index]['firstName'],
-                    secondName: snapshot.data.docs[index]['secondName'],);
+            padding: const EdgeInsets.all(16),
+            itemCount: snapshot.data.docs.length,
+            itemBuilder: (context, index) {
+              return Line(
+                doc: snapshot.data.docs[index],
+                id: snapshot.data.docs[index]['id'],
+                favorite: snapshot.data.docs[index]['favorite'],
+                firstName: snapshot.data.docs[index]['firstName'],
+                secondName: snapshot.data.docs[index]['secondName'],);
               },
             separatorBuilder: (BuildContext context, int index) {
               return const Divider(color: Colors.black38,);
