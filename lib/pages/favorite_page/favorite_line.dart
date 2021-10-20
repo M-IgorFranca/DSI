@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:firebasemywordpair/data/constants.dart';
 
 class FavoriteLine extends StatefulWidget {
   var id;

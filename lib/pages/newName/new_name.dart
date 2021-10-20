@@ -2,62 +2,43 @@ import 'package:firebasemywordpair/pages/home/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class ViewUpdate extends StatefulWidget {
-  var doc;
-  var id;
-  var firstName;
-  var secondName;
-  ViewUpdate({Key? key, @required this.doc, @required this.id, @required this.firstName, @required this.secondName})
-      : super(key:key);
-  _ViewUpdateState createState() => _ViewUpdateState();
+class NewName extends StatefulWidget {
+  const NewName({Key? key}) : super(key: key);
+
+  @override
+  _NewName createState() => _NewName();
 }
 
-class _ViewUpdateState extends State<ViewUpdate> {
+class _NewName extends State<NewName> {
   Stream<QuerySnapshot<Map<String, dynamic>>> get names =>
       FirebaseFirestore.instance
           .collection('names').snapshots(includeMetadataChanges: true);
 
-  void _save(BuildContext context, firstName, secondName) {
-    _formKey.currentState!.save();
-    Navigator.of(context)
-        .pop(MaterialPageRoute(builder: (BuildContext context) => HomePage()));
-    setState(() {
-      widget.firstName;
-      widget.secondName;
-    });
-  }
-
-  String? firstName = '';
-  String? secondName = '';
   final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(context) {
-    Map arguments = ModalRoute
-        .of(context)!
-        .settings
-        .arguments as Map;
-    var obj = arguments['index'];
-    var doc = arguments['doc'];
-    var firstName = arguments['firstName'];
-    var secondName = arguments['secondName'];
+    var firstName = '';
+    var secondName = '';
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Edit item'),
-      ),
-      body: StreamBuilder(
-        stream: FirebaseFirestore.instance.collection('names').snapshots(),
-        builder: (context, AsyncSnapshot snapshot){
-          if (!snapshot.hasData) return const Text('Carregando...');
-          return Container(
-              color: Colors.white,
-              child: updateNameForm(context, firstName, secondName, obj, doc));
-        }
-    )
+        appBar: AppBar(
+          title: Text('Adicionar Nome'),
+        ),
+        body: StreamBuilder(
+            stream: FirebaseFirestore.instance.collection('names').snapshots(),
+            builder: (context, AsyncSnapshot snapshot){
+              if (!snapshot.hasData) return const Text('Carregando...');
+              return Container(
+                  color: Colors.white,
+                  child: NewNameForm(context, firstName, secondName));
+            }
+        )
     );
   }
 
-  updateNameForm(context, firstName, secondName,obj,  DocumentSnapshot documentSnapshot) {
+  NewNameForm(context, firstName, secondName) {
+    int id = 0;
     return StreamBuilder(
         stream: FirebaseFirestore.instance.collection('names').snapshots(),
         builder: (context, AsyncSnapshot snapshot) {
@@ -72,7 +53,6 @@ class _ViewUpdateState extends State<ViewUpdate> {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 50, vertical: 16),
                     child: TextFormField(
-                      initialValue: firstName,
                       keyboardType: TextInputType.text,
                       decoration: const InputDecoration(labelText: 'Primeira'),
                       validator: (value) {
@@ -83,9 +63,7 @@ class _ViewUpdateState extends State<ViewUpdate> {
                       },
                       onSaved: (newValue) {
                         setState(() {
-                          documentSnapshot.reference.update({
-                            'firstName' : newValue!,
-                          });
+                          firstName = newValue!;
                         });
                       },
                     ),
@@ -94,7 +72,6 @@ class _ViewUpdateState extends State<ViewUpdate> {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 50, vertical: 16),
                     child: TextFormField(
-                      initialValue: secondName,
                       keyboardType: TextInputType.text,
                       decoration: const InputDecoration(labelText: 'Segunda'),
                       validator: (value) {
@@ -105,9 +82,7 @@ class _ViewUpdateState extends State<ViewUpdate> {
                       },
                       onSaved: (value) {
                         setState(() {
-                          documentSnapshot.reference.update({
-                            'secondName' : value!,
-                          });
+                          secondName = value!;
                         });
                       },
                     ),
@@ -117,9 +92,16 @@ class _ViewUpdateState extends State<ViewUpdate> {
                         horizontal: 50, vertical: 16),
                     child: ElevatedButton(
                       onPressed: () {
-                        _save(context, firstName, secondName);
+                        _formKey.currentState!.save();
+                        FirebaseFirestore.instance.collection('names').add({
+                            'favorite': false,
+                            'firstName': firstName,
+                            'secondName': secondName,
+                            'id': snapshot.data.docs.length,
+                          });
+                        Navigator.pop(context);
                       },
-                      child: Text('Salvar'),
+                      child: Text('Adicionar'),
                     ),
                   ),
                 ],

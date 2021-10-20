@@ -20,38 +20,47 @@ class _LineState extends State<Line>{
   Widget build(BuildContext context) {
     var obj = widget.id;
     var doc = widget.doc;
-    return Dismissible(
-      key: UniqueKey(),
-      child: buildRow(context, obj, doc),
-      background: Container(
-        color: Colors.red,
-      ),
-      onDismissed: (DismissDirection direction) {
-        setState(() {
-        });
-      },
-      confirmDismiss: (DismissDirection endToStart) async {
-        return await showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text("Confirmar"),
-              content: const Text("Tem certeza que deseja deletar esse item?"),
-              actions: <Widget>[
-                ElevatedButton(
-                    onPressed: () => Navigator.of(context).pop(true),
-                    child: const Text("Deletar")),
-                ElevatedButton(
-                  onPressed: () => Navigator.of(context).pop(false),
-                  child: const Text("Cancelar"),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
+    return dismiss(context, obj, doc, doc);
   }
+
+    Widget dismiss(context, obj, doc, DocumentSnapshot documentSnapshot){
+      return Dismissible(
+        key: UniqueKey(),
+        child: buildRow(context, obj, doc),
+        background: Container(
+          color: Colors.red,
+        ),
+        onDismissed: (DismissDirection direction) {
+          setState(() {
+          });
+        },
+        confirmDismiss: (DismissDirection endToStart) async {
+          return await showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text("Confirmar"),
+                content: const Text("Tem certeza que deseja deletar esse item?"),
+                actions: <Widget>[
+                  ElevatedButton(
+                      onPressed: () {
+                        documentSnapshot.reference.delete();
+                        Navigator.of(context).pop(true);
+                      },
+                      child: const Text("Deletar")),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(false);
+                    },
+                    child: const Text("Cancelar"),
+                  ),
+                ],
+              );
+            },
+          );
+        },
+      );
+    }
 
   Widget buildRow(context, obj, DocumentSnapshot documentSnapshot) {
     return ListTile(
@@ -88,7 +97,7 @@ class _LineState extends State<Line>{
         ),
         onTap: () => Navigator.of(context).push(MaterialPageRoute(
             builder: (BuildContext context) => ViewUpdate(),
-            settings: RouteSettings(arguments: {'index': widget.id, 'firstName': widget.firstName, 'secondName': widget.secondName}))
+            settings: RouteSettings(arguments: {'doc':widget.doc, 'index': widget.id, 'firstName': widget.firstName, 'secondName': widget.secondName}))
         )
     );
   }

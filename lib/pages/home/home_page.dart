@@ -1,3 +1,4 @@
+import 'package:firebasemywordpair/pages/newName/new_name.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebasemywordpair/pages/favorite_page/favorite_page.dart';
@@ -22,12 +23,21 @@ class _HomePageState extends State<HomePage> {
           IconButton(icon: const Icon(Icons.list), onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) =>  const FavoritePage()),
+              MaterialPageRoute(builder: (context) => const FavoritePage()),
             );
           }),
         ],
       ),
-      body: const List(),
+      body: List(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const NewName()));
+        },
+      child: const Icon(Icons.add_circle),
+      backgroundColor: Colors.blue,
+      )
     );
   }
 }

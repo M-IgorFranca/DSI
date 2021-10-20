@@ -1,4 +1,3 @@
-import 'package:firebasemywordpair/data/constants.dart';
 import 'package:flutter/material.dart';
 import 'favorite_line.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
