@@ -37,7 +37,7 @@ class _HomePageState extends State<HomePage> {
         },
       child: const Icon(Icons.add_circle),
       backgroundColor: Colors.blue,
-      )
+      ),
     );
   }
 }

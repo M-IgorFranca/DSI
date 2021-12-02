@@ -14,7 +14,7 @@ class Line extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _LineState();
 }
-
+var favList = [];
 class _LineState extends State<Line>{
   @override
   Widget build(BuildContext context) {
@@ -84,10 +84,12 @@ class _LineState extends State<Line>{
                       documentSnapshot.reference.update({
                         'favorite' : false,
                       });
+                      favList.removeWhere((item) => item[0] == widget.id);
                     } else {
                       documentSnapshot.reference.update({
                         'favorite' : true,
                       });
+                      favList.insert(0, [widget.id, widget.favorite ,widget.firstName, widget.secondName]);
                     }
                   });
                 },

@@ -1,6 +1,7 @@
+import 'package:firebasemywordpair/pages/login_page/login_page.dart';
 import 'package:flutter/material.dart';
-import 'pages/home/home_page.dart';
 import 'package:firebase_core/firebase_core.dart';
+
 
 const errorTitleStyle = TextStyle(color: Colors.yellow, fontSize: 20.0);
 const errorDescStyle = TextStyle(
@@ -25,8 +26,6 @@ class MyFirebaseApp extends StatefulWidget {
 }
 
 class _MyFirebaseAppState extends State<MyFirebaseApp> {
-  /// The future is part of the state of our widget. We should not call `initializeApp`
-  /// directly inside [build].
   final Future<FirebaseApp> _initialization = Firebase.initializeApp();
 
   @override
@@ -85,7 +84,7 @@ class MyApp extends StatelessWidget {
       title: 'Material App',
       initialRoute: 'home',
       routes: {
-        'home': (context) => const HomePage()
+        'home': (context) => const LoginPage(title: 'Login',)
       },
     );
   }
